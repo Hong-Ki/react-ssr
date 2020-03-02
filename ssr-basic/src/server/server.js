@@ -6,7 +6,8 @@ import React from "react";
 import ReactDOMServer from "react-dom/server";
 import App from "../client/App";
 import Html from "./Html";
-import WDM from "./WDM"; // WDM 추가
+import WDM from "./WDM";
+import { StaticRouter } from "react-router-dom";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -27,14 +28,15 @@ if (process.env.NODE_ENV !== "production") {
 
 //app.use(express.static(path.resolve(__dirname)));
 
-app.get("/", function(req, res, next) {
+app.get("*", function(req, res, next) {
+  const context = {};
   const html = ReactDOMServer.renderToString(
     <Html script={"./build/bundle.js"} stylesheet={"./build/main.css"}>
-      <App />
+      <StaticRouter location={req.url} context={context}>
+        <App />
+      </StaticRouter>
     </Html>
   );
-
-  console.log(html);
 
   res.set("content-type", "text/html");
   res.send(html);
